@@ -12,19 +12,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import net.miginfocom.swing.MigLayout;
 import signinpage.CustomerPage;
 
-public class CustomerProductFrame extends javax.swing.JFrame {
+public class OrderedProductFrame extends javax.swing.JFrame {
 
-    public CustomerProductFrame(Product product, CustomerPage sp) {
+    public OrderedProductFrame(Product product, CustomerPage sp, customerId customer) {
         initComponents();
-        SetProduct(product, sp);
+        SetProduct(product, sp,customer);
 
     }
 
-    public void SetProduct(Product product, CustomerPage sp) {
+    public void SetProduct(Product product, CustomerPage sp, customerId customer) {
         ImagePanel.setLayout(new MigLayout("wrap", "push[center]push", "push[]40[]15[]15[]push"));
         InfoPanel.setLayout(new MigLayout("fill, insets 0", "push[left]push", "push[center]push"));
         InfoPanel.setBackground(new Color(230, 230, 250));
@@ -60,7 +59,7 @@ public class CustomerProductFrame extends javax.swing.JFrame {
                 113, 230), 1));
         productPanel.add(j, "span, left, wrap");
 
-        j = new JLabel("Quantity: " + product.productQuantity + " ");
+        j = new JLabel("Ordered: " + product.productQuantity + " ");
         j.setFont(new Font("serif", 1, 18));
         j.setForeground(new Color(164, 113, 230));
         j.setBorder(BorderFactory.createLineBorder(new Color(164,
@@ -90,70 +89,26 @@ public class CustomerProductFrame extends javax.swing.JFrame {
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setBorder(null);
 
-        JPanel quantityPanel = new JPanel(new MigLayout("wrap 3", "push[]5[]5[]push", "push[]push"));
-        quantityPanel.setBackground(new Color(230, 230, 250));
-        ButtonOutLine incButton = new ButtonOutLine();
-        incButton.setText("+");
-        incButton.setFont(new Font("sansserif", 1, 15));
-        incButton.setBackground(new Color(164, 113, 230));
-        incButton.setForeground(new Color(164, 113, 230));
+        ButtonOutLine removeButton = new ButtonOutLine();
+        removeButton.setText("Remove");
+        removeButton.setBackground(new Color(164, 113, 230));
+        removeButton.setForeground(new Color(164, 113, 230));
+        ImagePanel.add(removeButton, "w 80%, h 40");
 
-        ButtonOutLine decButton = new ButtonOutLine();
-        decButton.setText("-");
-        decButton.setFont(new Font("sansserif", 1, 15));
-        decButton.setBackground(new Color(164, 113, 230));
-        decButton.setForeground(new Color(164, 113, 230));
-        MyTextField quantityField = new MyTextField();
-        quantityField.setText("0");
-        quantityPanel.add(decButton, "w 16%, h 20");
-        quantityPanel.add(quantityField, "w 25%, h 20");
-        quantityField.setHorizontalAlignment(SwingConstants.CENTER);
-        quantityPanel.add(incButton, "w 15%, h 10");
+        removeButton.addActionListener((ActionEvent e) -> {
 
-        decButton.addActionListener((ActionEvent e) -> {
+            for (int i = 0; i < sp.cart.size(); i++) {
+                if (sp.cart.get(i).productName.equals(product.productName) && sp.cart.get(i).productDescription.equals(product.productDescription) && sp.cart.get(i).productPrice.equals(product.productPrice)) {
 
-            int value = Integer.parseInt(quantityField.getText());
-            if (value > 0) {
-                value--;
-                quantityField.setText(String.valueOf(value));
-            }
-        });
-
-        incButton.addActionListener((ActionEvent e) -> {
-
-            int value = Integer.parseInt(quantityField.getText());
-            if (value < Integer.parseInt(product.productQuantity)) {
-                value++;
-                quantityField.setText(String.valueOf(value));
-            }
-        });
-
-        ImagePanel.add(quantityPanel, "w 80%, h 15");
-
-        ButtonOutLine addToCartButton = new ButtonOutLine();
-        addToCartButton.setText("Add to Cart");
-        addToCartButton.setBackground(new Color(164, 113, 230));
-        addToCartButton.setForeground(new Color(164, 113, 230));
-        ImagePanel.add(addToCartButton, "w 80%, h 40");
-
-        addToCartButton.addActionListener((ActionEvent e) -> {
-
-            int flag = 0;
-            for (Product ca : sp.cart) {
-                if (ca.productName.equals(product.productName) && ca.productDescription.equals(product.productDescription) && ca.productPrice.equals(product.productPrice)) {
-                    ca.productQuantity = Integer.toString(Math.min(Integer.parseInt(ca.productQuantity) + Integer.parseInt(quantityField.getText()), Integer.parseInt(product.productQuantity)));
-                    flag++;
+                    sp.cart.remove(sp.cart.get(i));
                 }
             }
-            if (flag == 0) {
-                Product ordered = product;
-                ordered.productQuantity = quantityField.getText();
 
-                sp.cart.add(ordered);
-            }
             this.dispose();
             sp.setVisible(true);
-            
+            sp.ViewOrderedProducts(sp,customer);
+            sp.repaint();
+
         });
 
         ButtonOutLine btnBack = new ButtonOutLine();
@@ -179,7 +134,6 @@ public class CustomerProductFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(600, 400));
 
         jLayeredPane2.setBackground(new java.awt.Color(230, 230, 250));
         jLayeredPane2.setOpaque(true);
@@ -259,11 +213,15 @@ public class CustomerProductFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CustomerProductFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OrderedProductFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 

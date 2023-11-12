@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -23,18 +22,19 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.Timer;
 import net.miginfocom.swing.MigLayout;
 import panelpackage.ButtonOutLine;
 import panelpackage.CustomerProductFrame;
 import panelpackage.Custompanel;
-import panelpackage.FadeOutTransition;
 import panelpackage.MyTextField;
+import panelpackage.OrderedProductFrame;
 import panelpackage.Product;
 import panelpackage.customerId;
 import static signinpage.SellerPage.decodeImage;
 
 public final class CustomerPage extends javax.swing.JFrame {
+
+    public ArrayList<Product> cart = new ArrayList<>();
 
     public CustomerPage(customerId customer) {
         initComponents();
@@ -74,11 +74,16 @@ public final class CustomerPage extends javax.swing.JFrame {
             ShowAllProducts(customer, cp);
         });
 
-        ButtonOutLine viewOrdersButton = new ButtonOutLine();
-        viewOrdersButton.setText("View Orders");
-        viewOrdersButton.setBackground(new Color(164, 113, 230));
-        viewOrdersButton.setForeground(new Color(230, 230, 250));
-        MenuItem.add(viewOrdersButton, "w 80%, h 40");
+        ButtonOutLine viewOrderButton = new ButtonOutLine();
+        viewOrderButton.setText("View Order");
+        viewOrderButton.setBackground(new Color(164, 113, 230));
+        viewOrderButton.setForeground(new Color(230, 230, 250));
+        MenuItem.add(viewOrderButton, "w 80%, h 40");
+
+        viewOrderButton.addActionListener((ActionEvent e) -> {
+
+            ViewOrderedProducts(cp, customer);
+        });
 
         ButtonOutLine historyButton = new ButtonOutLine();
         historyButton.setText("History");
@@ -97,6 +102,125 @@ public final class CustomerPage extends javax.swing.JFrame {
             new LoginForm().setVisible(true);
 
         });
+    }
+
+    public void ViewOrderedProducts(CustomerPage cp, customerId customer) {
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel,
+                BoxLayout.PAGE_AXIS));
+        JLabel allProductLabel = new JLabel("Ordered Products");
+        allProductLabel.setFont(new Font("serif", 1, 35));
+        allProductLabel.setForeground(new Color(150, 18, 196));
+
+        for (int i = 0; i < cart.size(); i++) {
+            //System.out.println(products.get(i).productName);
+            Product product = cart.get(i);
+            Custompanel customPanel = new Custompanel();
+            customPanel.setLayout(new MigLayout("wrap", "push[center]push", "push[center]push"));
+            customPanel.setPreferredSize(new Dimension(350, 30));
+            customPanel.setBackground(new Color(230, 230, 250));
+            JLabel j = new JLabel(cart.get(i).productName);
+
+            BufferedImage resizedImage = new BufferedImage(20, 20,
+                    cart.get(i).image.getType());
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(cart.get(i).image, 0, 0, 20,
+                    20, null);
+            g.dispose();
+            Image image = resizedImage.getScaledInstance(
+                    resizedImage.getWidth(), resizedImage.getHeight(),
+                    Image.SCALE_SMOOTH);
+
+            j.setIcon(new ImageIcon(image));
+            j.setFont(new Font("serif", 1, 30));
+            j.setOpaque(true);
+            j.setBackground(new Color(230, 230, 250));
+            j.setForeground(new Color(150, 18, 196));
+            j.setBorder(BorderFactory.createLineBorder(new Color(164,
+                    113, 230), 2));
+
+            j.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    cp.setVisible(false);
+                    OrderedProductFrame pf = new OrderedProductFrame(product, cp, customer);
+                    pf.setVisible(true);
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                }
+            });
+
+            customPanel.add(j, "span, wrap");
+            customPanel.setOpaque(true);
+            contentPanel.getPreferredSize();
+            contentPanel.add(customPanel, "w 60%, h 40, fill");
+        }
+
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(400, 350));
+
+        if (contentPanel.getComponentCount() == 0) {
+
+            Custompanel customPanel = new Custompanel();
+            customPanel.setLayout(new MigLayout("wrap", "push[]push", "150[center]push"));
+            customPanel.setPreferredSize(new Dimension(350, 30));
+            customPanel.setBackground(new Color(230, 230, 250));
+            JLabel jj = new JLabel("No Products Ordered");
+            jj.setFont(new Font("serif", 1, 30));
+            jj.setForeground(new Color(164, 113, 230));
+            customPanel.add(jj, "span, wrap");
+            contentPanel.add(customPanel, "w 60%, h 40, fill");
+        }
+
+        JPanel optionPanel = new JPanel(new MigLayout("wrap 2", "20[]20[]20",
+                "7[]1"));
+        optionPanel.setBackground(new Color(255, 255, 255));
+
+        Button removeAllButton = new Button("Remove All");
+        removeAllButton.setBackground(new Color(230, 230, 250));
+        removeAllButton.setForeground(new Color(164, 113, 230));
+
+        removeAllButton.addActionListener((ActionEvent e) -> {
+            cart.clear();
+
+            ViewOrderedProducts(cp, customer);
+        });
+
+        Button placeOrderButton = new Button("Place Order");
+        placeOrderButton.setBackground(new Color(230, 230, 250));
+        placeOrderButton.setForeground(new Color(164, 113, 230));
+        optionPanel.add(removeAllButton, "w 80%, h 40");
+        optionPanel.add(placeOrderButton, "w 80%, h 40");
+        
+        placeOrderButton.addActionListener((ActionEvent e) -> {
+            
+        });
+        
+        MenuExplore.removeAll();
+        scrollPane.setBorder(null);
+        MenuExplore.add(allProductLabel);
+        MenuExplore.add(scrollPane, "span, center, wrap");
+        if (!cart.isEmpty()) {
+            MenuExplore.add(optionPanel, "span, center, wrap");
+        }
+        MenuExplore.revalidate();
+        MenuExplore.repaint();
     }
 
     public void ShowAllProducts(customerId customer, CustomerPage cp) {
@@ -196,6 +320,7 @@ public final class CustomerPage extends javax.swing.JFrame {
         MenuExplore.removeAll();
         MenuExplore.add(searchPanel, "w 90%, h 50, wrap");
         scrollPane.setBorder(null);
+
         MenuExplore.add(scrollPane, "span, center, wrap");
         MenuExplore.revalidate();
         MenuExplore.repaint();
@@ -281,22 +406,22 @@ public final class CustomerPage extends javax.swing.JFrame {
                 contentPanel.add(customPanel, "w 60%, h 40, fill");
             }
         }
-        if(contentPanel.getComponentCount()==0){
-            
+        if (contentPanel.getComponentCount() == 0) {
+
             Custompanel customPanel = new Custompanel();
-                customPanel.setLayout(new MigLayout("wrap", "push[]push", "150[center]push"));
-                customPanel.setPreferredSize(new Dimension(350, 30));
-                customPanel.setBackground(new Color(230, 230, 250));
-                JLabel jj = new JLabel("Product Does Not Exist");
-                jj.setFont(new Font("serif", 1, 30));
-                jj.setForeground(new Color(164, 113, 230));
-                customPanel.add(jj, "span, wrap");
-                contentPanel.add(customPanel, "w 60%, h 40, fill");
+            customPanel.setLayout(new MigLayout("wrap", "push[]push", "150[center]push"));
+            customPanel.setPreferredSize(new Dimension(350, 30));
+            customPanel.setBackground(new Color(230, 230, 250));
+            JLabel jj = new JLabel("Product Does Not Exist");
+            jj.setFont(new Font("serif", 1, 30));
+            jj.setForeground(new Color(164, 113, 230));
+            customPanel.add(jj, "span, wrap");
+            contentPanel.add(customPanel, "w 60%, h 40, fill");
         }
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize(new Dimension(400, 350));
+        scrollPane.setPreferredSize(new Dimension(350, 350));
         searchButton.addActionListener((ActionEvent e) -> {
             String name = searchProduct.getText();
             ShowSearchProducts(customer, cp, name);
@@ -473,15 +598,14 @@ public final class CustomerPage extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CustomerPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CustomerPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CustomerPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(CustomerPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

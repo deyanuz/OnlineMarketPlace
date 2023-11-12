@@ -4,7 +4,6 @@ import java.awt.Button;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
@@ -48,19 +47,13 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
         cmdCustomer.setBackground(new Color(230, 230, 250));
         cmdCustomer.setForeground(new Color(164, 113, 230));
         register.add(cmdCustomer, "w 40%, h 40");
-        cmdCustomer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registerCustomer();
-            }
+        cmdCustomer.addActionListener((ActionEvent e) -> {
+            registerCustomer();
         });
 
         Button cmdSeller = new Button("Seller Register");
-        cmdSeller.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registerSeller();
-            }
+        cmdSeller.addActionListener((ActionEvent e) -> {
+            registerSeller();
         });
         cmdSeller.setBackground(new Color(230, 230, 250));
         cmdSeller.setForeground(new Color(164, 113, 230));
@@ -131,16 +124,13 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
         Button btnRegister = new Button("Register");
         btnRegister.setBackground(new Color(230, 230, 250));
         btnRegister.setForeground(new Color(164, 113, 230));
-        btnRegister.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                registerCustomerToDatabase(txtName.getText(),
-                        txtEmail.getText(), String.valueOf(
-                        txtPass.getPassword()),
-                        txtSecurityQuestion.getText(),
-                        txtSecurityQuestionAnswer.getText(),
-                        getSelectedToggleButtonText(group));
-            }
+        btnRegister.addActionListener((ActionEvent ae) -> {
+            registerCustomerToDatabase(txtName.getText(),
+                    txtEmail.getText(), String.valueOf(
+                            txtPass.getPassword()),
+                    txtSecurityQuestion.getText(),
+                    txtSecurityQuestionAnswer.getText(),
+                    getSelectedToggleButtonText(group));
         });
 
         register.add(btnRegister, "w 40%, h 35, align center");
@@ -589,7 +579,6 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
                     connection.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
 
