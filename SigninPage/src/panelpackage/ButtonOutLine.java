@@ -1,6 +1,4 @@
-
 package panelpackage;
-
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -24,9 +22,11 @@ public class ButtonOutLine extends JButton {
         int width = getWidth();
         int height = getHeight();
         Graphics2D g2 = (Graphics2D) grphcs;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+                RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(getBackground());
-        g2.drawRoundRect(1, 1, width-2, height - 2, height, height);
+        g2.drawRoundRect(1, 1, width - 2, height - 2, height, 
+                height);
         super.paintComponent(grphcs);
     }
 }

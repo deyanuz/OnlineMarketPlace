@@ -3,9 +3,7 @@
 <Form version="1.9" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[800, 500]"/>
-    </Property>
+    <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -26,12 +24,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jLayeredPane2" alignment="0" max="32767" attributes="0"/>
+          <Component id="jLayeredPane2" alignment="0" pref="800" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="jLayeredPane2" alignment="0" max="32767" attributes="0"/>
+          <Component id="jLayeredPane2" alignment="0" pref="500" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -42,6 +40,9 @@
           <Color blue="ff" green="ff" red="ff" type="rgb"/>
         </Property>
         <Property name="opaque" type="boolean" value="true"/>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[1000, 625]"/>
+        </Property>
       </Properties>
 
       <Layout>
@@ -56,8 +57,8 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="MenuItem" max="32767" attributes="0"/>
-              <Component id="MenuExplore" alignment="0" max="32767" attributes="0"/>
+              <Component id="MenuItem" pref="500" max="32767" attributes="0"/>
+              <Component id="MenuExplore" alignment="0" pref="500" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -67,7 +68,13 @@
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[300, 625]"/>
+            </Property>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JLayeredPane.layer" type="java.lang.Integer" value="100"/>
+          </AuxValues>
 
           <Layout>
             <DimensionLayout dim="0">
@@ -88,7 +95,7 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[500, 500]"/>
+              <Dimension value="[700, 625]"/>
             </Property>
           </Properties>
 
