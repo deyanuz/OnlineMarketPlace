@@ -127,7 +127,7 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
         btnRegister.addActionListener((ActionEvent ae) -> {
             registerCustomerToDatabase(txtName.getText(),
                     txtEmail.getText(), String.valueOf(
-                            txtPass.getPassword()),
+                    txtPass.getPassword()),
                     txtSecurityQuestion.getText(),
                     txtSecurityQuestionAnswer.getText(),
                     getSelectedToggleButtonText(group));
@@ -326,16 +326,9 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
             loginSeller(L);
         });
 
-        Button cmdAdmin = new Button("Admin Login");
-        cmdAdmin.setBackground(new Color(230, 230, 250));
-        cmdAdmin.setForeground(new Color(164, 113, 230));
-        cmdAdmin.addActionListener((ActionEvent e) -> {
-            loginAdmin(L);
-        });
-
         login.add(cmd, "w 40%, h 40");
         login.add(cmdSeller, "w 40%, h 40");
-        login.add(cmdAdmin, "w 40%, h 40");
+
     }
 
     public void loginCustomer(LoginForm L) {
@@ -652,40 +645,6 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
         }
     }
 
-    public void loginAdmin(LoginForm L) {
-
-        login.removeAll();
-
-        login.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
-        JLabel label = new JLabel("Admin Login");
-        label.setFont(new Font("sansserif", 1, 30));
-        label.setForeground(new Color(164, 113, 230));
-        login.add(label, "span, center, wrap");
-
-        MyTextField txtEmail = new MyTextField();
-        txtEmail.setPrefixIcon(new ImageIcon(getClass().getResource("mail.png")));
-        txtEmail.setHint("Email");
-        login.add(txtEmail, "w 60%, wrap");
-
-        MyPasswordField txtPass = new MyPasswordField();
-        txtPass.setPrefixIcon(new ImageIcon(getClass().getResource("pass.png")));
-        txtPass.setHint("Password");
-        login.add(txtPass, "w 60%, wrap");
-
-        Button btnBack = new Button("Back");
-        btnBack.setBackground(new Color(230, 230, 250));
-        btnBack.setForeground(new Color(164, 113, 230));
-        btnBack.addActionListener((ActionEvent ae) -> {
-            initLogin(L);
-            login.revalidate();
-            login.repaint();
-        });
-        login.add(btnBack, "w 40%, h 40, align center");
-
-        login.revalidate();
-        login.repaint();
-    }
-
     public void PasswordReset(String email, String user, LoginForm L) {
 
         login.removeAll();
@@ -820,12 +779,10 @@ public final class PanelLoginRegister extends javax.swing.JLayeredPane {
     }
 
     public void init(String user, LoginForm L) {
-        if (user == "seller") {
+        if ("seller".equals(user)) {
             loginSeller(L);
-        } else if (user == "customer") {
+        } else if ("customer".equals(user)) {
             loginCustomer(L);
-        } else {
-            loginAdmin(L);
         }
     }
 

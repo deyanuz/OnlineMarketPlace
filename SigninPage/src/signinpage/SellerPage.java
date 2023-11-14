@@ -7,7 +7,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
@@ -31,12 +33,16 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.Timer;
+import org.json.JSONException;
 import panelpackage.Custompanel;
 import panelpackage.FadeOutTransition;
+import panelpackage.OrderFrame;
 import panelpackage.ProductFrame;
 import panelpackage.sellerId;
 
@@ -78,6 +84,10 @@ public class SellerPage extends javax.swing.JFrame {
         viewOrdersButton.setForeground(new Color(230, 230, 250));
         MenuItem.add(viewOrdersButton, "w 80%, h 40");
 
+        viewOrdersButton.addActionListener((ActionEvent e) -> {
+            ViewOrders(seller, sp);
+        });
+
         ButtonOutLine allProductsButton = new ButtonOutLine();
         allProductsButton.setText("All Products");
         allProductsButton.setBackground(new Color(164, 113, 230));
@@ -94,11 +104,174 @@ public class SellerPage extends javax.swing.JFrame {
         logoutButton.setForeground(new Color(230, 230, 250));
         MenuItem.add(logoutButton, "w 80%, h 40");
 
-        logoutButton.addActionListener((e) -> {
-            this.setVisible(false);
-            new LoginForm().setVisible(true);
-
+        logoutButton.addActionListener((ActionEvent e) -> {
+            JFrame myframe = new JFrame();
+            JLabel j = new JLabel("Are You Sure?");
+            myframe.setSize(300, 200);
+            JButton okButton = new JButton("  OK  ");
+            JButton cancelButton = new JButton("Cancel");
+            okButton.addActionListener((ActionEvent e1) -> {
+                SellerPage.this.setVisible(false);
+                new LoginForm().setVisible(true);
+                myframe.dispose();
+            });
+            cancelButton.addActionListener((ActionEvent e1) -> {
+                myframe.dispose();
+            }); JPanel panel = new JPanel(new MigLayout("wrap 2", "push[center]push", "push[center]push"));
+            panel.add(j, "span, wrap");
+            panel.add(okButton);
+            panel.add(cancelButton);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int centerX = (int) ((screenSize.getWidth() - myframe.getWidth()) / 2);
+            int centerY = (int) ((screenSize.getHeight() - myframe.getHeight()) / 2);
+            myframe.setLocation(centerX, centerY);
+            myframe.add(panel);
+            myframe.setUndecorated(true);
+            myframe.setVisible(true);
         });
+    }
+
+    public void ViewOrders(sellerId seller, SellerPage sp) {
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel,
+                BoxLayout.PAGE_AXIS));
+
+        JLabel historyLabel = new JLabel("History");
+        historyLabel.setFont(new Font("serif", 1, 35));
+        historyLabel.setForeground(new Color(150, 18, 196));
+
+        ArrayList<Product> products = GetOrders(seller);
+
+        // Add components to the panel
+        for (int i = 0; i < products.size(); i++) {
+            //System.out.println(products.get(i).productName);
+            Product product = products.get(i);
+            Custompanel customPanel = new Custompanel();
+            customPanel.setLayout(new MigLayout("wrap", "push[center]push", "push[center]push"));
+            customPanel.setPreferredSize(new Dimension(350, 30));
+            customPanel.setBackground(new Color(230, 230, 250));
+            JLabel j = new JLabel(products.get(i).productName);
+
+            BufferedImage resizedImage = new BufferedImage(20, 20,
+                    products.get(i).image.getType());
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(products.get(i).image, 0, 0, 20,
+                    20, null);
+            g.dispose();
+            Image image = resizedImage.getScaledInstance(
+                    resizedImage.getWidth(), resizedImage.getHeight(),
+                    Image.SCALE_SMOOTH);
+
+            j.setIcon(new ImageIcon(image));
+            j.setFont(new Font("serif", 1, 30));
+            j.setOpaque(true);
+            j.setBackground(new Color(230, 230, 250));
+            j.setForeground(new Color(150, 18, 196));
+            j.setBorder(BorderFactory.createLineBorder(new Color(164,
+                    113, 230), 2));
+
+            j.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    sp.setVisible(false);
+                    OrderFrame pf = new OrderFrame(seller, product, sp);
+                    pf.setVisible(true);
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                }
+            });
+
+            customPanel.add(j, "span, wrap");
+            customPanel.setOpaque(true);
+            contentPanel.getPreferredSize();
+            contentPanel.add(customPanel, "w 60%, h 40, fill");
+        }
+
+        if (contentPanel.getComponentCount() == 0) {
+
+            Custompanel customPanel = new Custompanel();
+            customPanel.setLayout(new MigLayout("wrap", "push[]push", "150[center]push"));
+            customPanel.setPreferredSize(new Dimension(350, 30));
+            customPanel.setBackground(new Color(230, 230, 250));
+            JLabel jj = new JLabel("No Previous Orders");
+            jj.setFont(new Font("serif", 1, 30));
+            jj.setForeground(new Color(164, 113, 230));
+            customPanel.add(jj, "span, wrap");
+            contentPanel.add(customPanel, "w 60%, h 40, fill");
+        }
+
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(400, 350));
+
+        MenuExplore.removeAll();
+        MenuExplore.add(historyLabel, "span, center, wrap");
+        scrollPane.setBorder(null);
+
+        MenuExplore.add(scrollPane, "span, center, wrap");
+        MenuExplore.revalidate();
+        MenuExplore.repaint();
+    }
+
+    public ArrayList<Product> GetOrders(sellerId seller) {
+        ArrayList<Product> products = new ArrayList<>();
+        String JDBC_URL = "jdbc:mysql://localhost:3306/myDb";
+        String USER = "root";
+        String PASSWORD = "1234";
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL,
+                USER, PASSWORD)) {
+            String query = "SELECT * FROM `order` ";
+            try (PreparedStatement preparedStatement
+                    = connection.prepareStatement(query)) {
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Product product = new Product();
+                        product.sellerEmail = resultSet.getString(
+                                "CustomerEmail");
+                        product.productName = resultSet.getString(
+                                "ProductName");
+                        product.productPrice = resultSet.getString(
+                                "ProductPrice");
+                        product.productQuantity = resultSet.getString(
+                                "ProductQuantity");
+                        product.productDescription = resultSet.getString(
+                                "ProductDescription");
+
+                        // Convert and set the image
+                        byte[] imageData = resultSet.getBytes("Image");
+                        if (imageData != null) {
+                            BufferedImage image = decodeImage(imageData);
+                            product.image = image;
+                        }
+                        if ("false".equals(resultSet.getString(
+                                "Shiped")) && seller.email.equals(resultSet.getString(
+                                        "CompanyEmail"))) {
+                            products.add(product);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+        }
+
+        return products;
     }
 
     public void ShowAllProducts(sellerId seller, SellerPage sp) {
@@ -106,10 +279,10 @@ public class SellerPage extends javax.swing.JFrame {
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel,
                 BoxLayout.PAGE_AXIS));
-        JLabel allProductLabel=new JLabel("All Products");
+        JLabel allProductLabel = new JLabel("All Products");
         allProductLabel.setFont(new Font("serif", 1, 35));
         allProductLabel.setForeground(new Color(150, 18, 196));
-                
+
         ArrayList<Product> products = GetProducts(seller.email);
 
         // Add components to the panel
@@ -180,7 +353,7 @@ public class SellerPage extends javax.swing.JFrame {
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(400, 350));
         MenuExplore.removeAll();
-        MenuExplore.add(allProductLabel,"span, center, wrap");
+        MenuExplore.add(allProductLabel, "span, center, wrap");
         scrollPane.setBorder(null);
         MenuExplore.add(scrollPane, "span, center, wrap");
         MenuExplore.revalidate();
@@ -523,20 +696,43 @@ public class SellerPage extends javax.swing.JFrame {
         MenuExplore.removeAll();
 
         MigLayout layout = new MigLayout("wrap", "push[center]push",
-                "push[]10[]push");
+                "15[]push[]20[]10[]10[]push");
         MenuExplore.setLayout(layout);
-        JLabel companyNameJLabel = new JLabel(seller.companyName);
-        companyNameJLabel.setFont(new Font("sansserif", 1, 35));
+        
+        JPanel aboutPanel=new JPanel(new MigLayout("wrap", "425[right]","push[]push"));
+        aboutPanel.setBackground(new Color(255,255,255));
+        ButtonOutLine aboutOutLine=new ButtonOutLine();
+        aboutOutLine.setIcon(new ImageIcon(getClass().getResource("info.png")));
+        aboutPanel.add(aboutOutLine);
+        MenuExplore.add(aboutPanel,"w 80%, h 20");
+        aboutOutLine.addActionListener((ActionEvent e) -> {
+            JsonFrame jsonFrameExample = new JsonFrame();
+            try {
+                jsonFrameExample.showJsonFrame();
+            } catch (JSONException ex) {
+                Logger.getLogger(SellerPage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        JLabel titleJLabel = new JLabel("Seller Information");
+        titleJLabel.setFont(new Font("serif", 3, 35));
+        titleJLabel.setForeground(new Color(164, 113, 230));
+        MenuExplore.add(titleJLabel);
+        
+        JLabel companyNameJLabel = new JLabel("Shop Name: "+seller.companyName);
+        companyNameJLabel.setFont(new Font("serif", 2, 25));
         companyNameJLabel.setForeground(new Color(164, 113, 230));
         MenuExplore.add(companyNameJLabel);
 
-        JLabel emailJLabel = new JLabel(seller.email);
-        emailJLabel.setFont(new Font("sansserif", 1, 35));
-        emailJLabel.setForeground(new Color(164, 113, 230));
-        MenuExplore.add(emailJLabel);
+        JLabel companyEmailJLabel = new JLabel("Company Email: "+seller.email);
+        companyEmailJLabel.setFont(new Font("serif", 2, 25));
+        companyEmailJLabel.setForeground(new Color(164, 113, 230));
+        MenuExplore.add(companyEmailJLabel);
 
-        MenuExplore.revalidate();
-        MenuExplore.repaint();
+        JLabel companyGenderJLabel = new JLabel("Company Location: "+seller.location);
+        companyGenderJLabel.setFont(new Font("serif", 2, 25));
+        companyGenderJLabel.setForeground(new Color(164, 113, 230));
+        MenuExplore.add(companyGenderJLabel);
 
     }
 
@@ -549,6 +745,7 @@ public class SellerPage extends javax.swing.JFrame {
         MenuExplore = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
         setResizable(false);
 
         jLayeredPane2.setBackground(new java.awt.Color(255, 255, 255));
